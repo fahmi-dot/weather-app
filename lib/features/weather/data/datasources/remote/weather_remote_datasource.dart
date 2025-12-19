@@ -18,8 +18,8 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
     final response = await apiClient.get(
       'weather',
       queryParameters: {
-        'lat': lat,
-        'lon': lon,
+        'lat': lat.toString(),
+        'lon': lon.toString(),
       }
     );
 
