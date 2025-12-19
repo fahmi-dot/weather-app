@@ -14,10 +14,10 @@ class WeatherModel extends Weather {
   factory WeatherModel.fromJson(Map<String, dynamic> json) {
     return WeatherModel(
       cityName: json['name'],
-      temperature: json['main']['temp'],
+      temperature: (json['main']['temp']).toDouble(),
       description: json['weather'][0]['description'],
       humidity: json['main']['humidity'],
-      windSpeed: json['wind']['speed'],
+      windSpeed: (json['wind']['speed']).toDouble(),
       icon: json['weather'][0]['icon'],
       dateTime: DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000),
     );
