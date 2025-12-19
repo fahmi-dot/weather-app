@@ -7,10 +7,17 @@ import 'package:weather_app/features/weather/data/repositories/weather_repositor
 import 'package:weather_app/features/weather/domain/repositories/weather_repository.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_weather_usecase.dart';
 import 'package:weather_app/features/weather/presentation/controllers/weather_controller.dart';
+import 'package:weather_app/shared/controllers/theme_controller.dart';
 
 class DependencyInjection {
   static Future<void> init() async {
-    Get.lazyPut(() async => await SharedPreferences.getInstance());
+    final prefs = await SharedPreferences.getInstance();
+    Get.put<SharedPreferences>(prefs);
+
+    Get.put(
+      ThemeController(prefs: Get.find()),
+      permanent: true,
+    );
 
     Get.lazyPut<ApiClient>(
       () => ApiClient(http.Client())
