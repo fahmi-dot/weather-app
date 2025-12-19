@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _searchBar() {
     return TextField(
+      controller: controller.searchController,
       decoration: InputDecoration(
         prefixIcon: HeroIcon(HeroIcons.magnifyingGlass),
         hintText: AppStrings.enterCityName,
@@ -68,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
         color: Theme.of(context).colorScheme.onSurface,
         fontSize: AppSizes.font5XL,
       ),
-      onSubmitted: (value) {},
+      onSubmitted: (_) => controller.loadWeatherByCity(),
     );
   }
 
