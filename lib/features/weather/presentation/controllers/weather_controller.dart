@@ -1,13 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:weather_app/core/constants/app_strings.dart';
 import 'package:weather_app/core/utils/permissions.dart';
 import 'package:weather_app/features/weather/domain/entities/weather.dart';
+import 'package:weather_app/features/weather/domain/usecases/get_weather_by_city_usecase.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_weather_usecase.dart';
 
 class WeatherController extends GetxController {
+  final TextEditingController searchController = TextEditingController();
+  
   final GetWeatherUseCase getWeather;
+  final GetWeatherByCityUseCase getWeatherByCity;
 
   WeatherController({
     required this.getWeather,
+    required this.getWeatherByCity,
   });
 
   final Rx<Weather?> weather = Rx<Weather?>(null);
@@ -19,6 +26,12 @@ class WeatherController extends GetxController {
   void onReady() {
     super.onReady();
     loadWeather();
+  }
+
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
   }
 
   Future<void> loadWeather() async {
@@ -34,7 +47,7 @@ class WeatherController extends GetxController {
       result.fold(
         (failure) {
           Get.snackbar(
-            'Error',
+            AppStrings.errorMsg,
             errorMsg.value = failure.msg,
             snackPosition: SnackPosition.BOTTOM,
           );
@@ -46,12 +59,48 @@ class WeatherController extends GetxController {
       hasError.value = true;
       errorMsg.value = e.toString();
       Get.snackbar(
-        'Error',
-        'Failed getting location',
+        AppStrings.errorMsg,
+        AppStrings.failedGetLocMsg,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> loadWeatherByCity() async {
+    final cityName = searchController.text.trim();
+
+    if (cityName.isEmpty) return;
+    
+    try {
+      isLoading.value = true;
+
+      final result = await getWeatherByCity.execute(cityName);
+
+      result.fold(
+        (failure) {
+          Get.snackbar(
+            AppStrings.errorMsg,
+            errorMsg.value = failure.msg,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }, 
+        (data) {
+          weather.value = data;
+        }
+      );
+    } catch (e) {
+      hasError.value = true;
+      errorMsg.value = e.toString();
+      Get.snackbar(
+        AppStrings.errorMsg,
+        AppStrings.failedGetLocMsg,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoading.value = false;
+      searchController.clear();
     }
   }
 }
