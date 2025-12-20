@@ -14,6 +14,7 @@ import 'package:weather_app/features/weather/domain/usecases/get_weather_by_city
 import 'package:weather_app/features/weather/domain/usecases/get_weather_usecase.dart';
 import 'package:weather_app/features/weather/presentation/controllers/forecast_controller.dart';
 import 'package:weather_app/features/weather/presentation/controllers/weather_controller.dart';
+import 'package:weather_app/shared/controllers/language_controller.dart';
 import 'package:weather_app/shared/controllers/theme_controller.dart';
 
 class DependencyInjection {
@@ -21,6 +22,7 @@ class DependencyInjection {
     final prefs = await SharedPreferences.getInstance();
     Get.put<SharedPreferences>(prefs);
     Get.put<ThemeController>(ThemeController(prefs: Get.find()), permanent: true);
+    Get.put<LanguageController>(LanguageController(prefs: Get.find()), permanent: true);
 
     // Networks
     Get.lazyPut<ApiClient>(() => ApiClient(http.Client()));

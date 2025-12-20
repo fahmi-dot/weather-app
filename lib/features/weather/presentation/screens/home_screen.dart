@@ -8,6 +8,7 @@ import 'package:weather_app/core/constants/app_strings.dart';
 import 'package:weather_app/features/weather/domain/entities/forecast.dart';
 import 'package:weather_app/features/weather/presentation/controllers/forecast_controller.dart';
 import 'package:weather_app/features/weather/presentation/controllers/weather_controller.dart';
+import 'package:weather_app/shared/controllers/language_controller.dart';
 import 'package:weather_app/shared/controllers/theme_controller.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final WeatherController controller = Get.find();
+  final locale = Get.find<LanguageController>().locale.value.toLanguageTag();
 
   @override
   void initState() {
@@ -27,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _initLocaleFormatting() async {
-    final locale = Get.locale?.toLanguageTag() ?? 'en_US';
     await initializeDateFormatting(locale, null);
   }
 
@@ -250,6 +251,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _changeLanguageButton() {
+    final LanguageController languageController = Get.find();
+
     return GestureDetector(
       onTap: () {
         final currentLang = Get.locale?.languageCode ?? 'en';
@@ -259,6 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
             : Locale('id', 'ID')
         );
 
+        languageController.toggle();
         controller.loadWeatherByCity();
       },
       child: Container(
@@ -279,7 +283,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _weatherCard() {
     final weather = controller.weather.value!;
-    final locale = Get.locale?.toLanguageTag() ?? 'en_US';
 
     return SizedBox(
       width: AppSizes.screenWidth(context),
