@@ -49,7 +49,7 @@ class WeatherController extends GetxController {
       result.fold(
         (failure) {
           Get.snackbar(
-            AppStrings.errorMsg,
+            AppStrings.errorMsg.tr,
             errorMsg.value = failure.msg,
             snackPosition: SnackPosition.BOTTOM,
           );
@@ -62,8 +62,8 @@ class WeatherController extends GetxController {
       hasError.value = true;
       errorMsg.value = e.toString();
       Get.snackbar(
-        AppStrings.errorMsg,
-        AppStrings.failedGetLocMsg,
+        AppStrings.errorMsg.tr,
+        AppStrings.failedGetLocMsg.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -72,9 +72,9 @@ class WeatherController extends GetxController {
   }
 
   Future<void> loadWeatherByCity() async {
-    final cityName = searchController.text.trim();
+    String cityName = searchController.text.trim();
 
-    if (cityName.isEmpty) return;
+    if (cityName.isEmpty) cityName = weather.value!.cityName;
     
     try {
       isLoading.value = true;
@@ -84,7 +84,7 @@ class WeatherController extends GetxController {
       result.fold(
         (failure) {
           Get.snackbar(
-            AppStrings.errorMsg,
+            AppStrings.errorMsg.tr,
             errorMsg.value = failure.msg,
             snackPosition: SnackPosition.BOTTOM,
           );
@@ -98,8 +98,8 @@ class WeatherController extends GetxController {
       hasError.value = true;
       errorMsg.value = e.toString();
       Get.snackbar(
-        AppStrings.errorMsg,
-        AppStrings.failedGetLocMsg,
+        AppStrings.errorMsg.tr,
+        AppStrings.failedGetLocMsg.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {

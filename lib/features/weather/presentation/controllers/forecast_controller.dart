@@ -27,7 +27,7 @@ class ForecastController extends GetxController {
       result.fold(
         (failure) {
           Get.snackbar(
-            AppStrings.errorMsg,
+            AppStrings.errorMsg.tr,
             errorMsg.value = failure.msg,
             snackPosition: SnackPosition.BOTTOM,
           );
@@ -39,8 +39,8 @@ class ForecastController extends GetxController {
       hasError.value = true;
       errorMsg.value = e.toString();
       Get.snackbar(
-        AppStrings.errorMsg,
-        AppStrings.failedGetLocMsg,
+        AppStrings.errorMsg.tr,
+        AppStrings.failedGetLocMsg.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -57,7 +57,7 @@ class ForecastController extends GetxController {
       result.fold(
         (failure) {
           Get.snackbar(
-            AppStrings.errorMsg,
+            AppStrings.errorMsg.tr,
             errorMsg.value = failure.msg,
             snackPosition: SnackPosition.BOTTOM,
           );
@@ -70,8 +70,8 @@ class ForecastController extends GetxController {
       hasError.value = true;
       errorMsg.value = e.toString();
       Get.snackbar(
-        AppStrings.errorMsg,
-        AppStrings.failedGetLocMsg,
+        AppStrings.errorMsg.tr,
+        AppStrings.failedGetLocMsg.tr,
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
