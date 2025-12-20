@@ -6,6 +6,9 @@ class Weather extends Equatable {
   final String description;
   final int humidity;
   final double windSpeed;
+  final int pressure;
+  final DateTime sunrise;
+  final DateTime sunset;
   final String icon;
   final DateTime dateTime;
 
@@ -15,6 +18,9 @@ class Weather extends Equatable {
     required this.description,
     required this.humidity,
     required this.windSpeed,
+    required this.pressure,
+    required this.sunrise,
+    required this.sunset,
     required this.icon,
     required this.dateTime,
   });
@@ -26,6 +32,9 @@ class Weather extends Equatable {
     description,
     humidity,
     windSpeed,
+    pressure,
+    sunrise,
+    sunset,
     icon,
     dateTime,
   ];

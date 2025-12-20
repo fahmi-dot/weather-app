@@ -7,6 +7,9 @@ class WeatherModel extends Weather {
     required super.description,
     required super.humidity,
     required super.windSpeed,
+    required super.pressure,
+    required super.sunrise,
+    required super.sunset,
     required super.icon,
     required super.dateTime,
   });
@@ -18,6 +21,9 @@ class WeatherModel extends Weather {
       description: json['weather'][0]['description'],
       humidity: json['main']['humidity'],
       windSpeed: (json['wind']['speed']).toDouble(),
+      pressure: json['main']['pressure'],
+      sunrise: DateTime.fromMillisecondsSinceEpoch(json['sys']['sunrise'] * 1000),
+      sunset: DateTime.fromMillisecondsSinceEpoch(json['sys']['sunset'] * 1000),
       icon: json['weather'][0]['icon'],
       dateTime: DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000),
     );
@@ -30,6 +36,9 @@ class WeatherModel extends Weather {
       description: weather.description,
       humidity: weather.humidity,
       windSpeed: weather.windSpeed,
+      pressure: weather.pressure,
+      sunrise: weather.sunrise,
+      sunset: weather.sunset,
       icon: weather.icon,
       dateTime: weather.dateTime,
     );
@@ -40,6 +49,7 @@ class WeatherModel extends Weather {
       'dt': dateTime.millisecondsSinceEpoch ~/ 1000,
       'main': {
         'temp': temperature,
+        'pressure': pressure,
         'humidity': humidity,
       },
       'weather': [
@@ -51,6 +61,10 @@ class WeatherModel extends Weather {
       'wind': {
         'speed': windSpeed,
       },
+      'sys': {
+        'sunrise': sunrise.millisecondsSinceEpoch ~/ 1000,
+        'sunset': sunset.millisecondsSinceEpoch ~/ 1000,
+      },
     };
   }
 
@@ -61,6 +75,9 @@ class WeatherModel extends Weather {
       description: description,
       humidity: humidity,
       windSpeed: windSpeed,
+      pressure: pressure,
+      sunrise: sunrise,
+      sunset: sunset,
       icon: icon,
       dateTime: dateTime,
     );
