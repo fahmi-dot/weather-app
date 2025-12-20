@@ -4,6 +4,8 @@ import 'package:heroicons/heroicons.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_app/core/constants/app_sizes.dart';
 import 'package:weather_app/core/constants/app_strings.dart';
+import 'package:weather_app/features/weather/domain/entities/forecast.dart';
+import 'package:weather_app/features/weather/presentation/controllers/forecast_controller.dart';
 import 'package:weather_app/features/weather/presentation/controllers/weather_controller.dart';
 import 'package:weather_app/shared/controllers/theme_controller.dart';
 
@@ -56,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         prefixIcon: HeroIcon(HeroIcons.magnifyingGlass),
         hintText: AppStrings.enterCityName,
         hintStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
         ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
@@ -210,6 +212,8 @@ class _HomeScreenState extends State<HomeScreen> {
               _weatherCard(),
               const SizedBox(height: AppSizes.paddingL),
               _weatherDetail(),
+              const SizedBox(height: AppSizes.paddingL),
+              _forecast(),
             ],
           ),
         ),
@@ -349,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           _detailItem(
             'temp',
-            '${weather.temperature}°C',
+            '${weather.temperature.toStringAsFixed(1)}°C',
             'Suhu',
           ),
           _detailItem(
@@ -397,6 +401,86 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _forecast() {
+    final ForecastController forecastController = Get.find();
+
+    return Obx(() {
+      return Container(
+        height: 250.0,
+        padding: EdgeInsets.all(AppSizes.paddingL),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(AppSizes.radius2XL),
+        ),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: forecastController.forecast.length,
+          itemBuilder: (context, index) {
+            final item = forecastController.forecast[index];
+
+            return _forecastCard(item);
+          }, 
+          separatorBuilder: (_, _) => VerticalDivider(
+            color: Theme.of(context).colorScheme.secondary,
+            thickness: 2,
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _forecastCard(Forecast item) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        vertical: AppSizes.paddingL,
+        horizontal: AppSizes.paddingM
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            spacing: AppSizes.paddingXS,
+            children: [
+              Text(
+                DateFormat.d().format(item.dateTime),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: AppSizes.font5XL,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Container(
+                width: AppSizes.paddingL,
+                height: 1,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+              Text(
+                DateFormat.Hm().format(item.dateTime),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontSize: AppSizes.fontL,
+                ),
+              ),
+            ],
+          ),
+          Image.asset(
+            'assets/icons/${item.icon}.png',
+            width: AppSizes.icon2XL,
+            height: AppSizes.icon2XL,
+          ),
+          Text(
+            '${item.temperature.toStringAsFixed(0)}°C',
+              style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
+              fontSize: AppSizes.fontL,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
