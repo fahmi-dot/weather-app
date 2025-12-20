@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:heroicons/heroicons.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_app/core/constants/app_sizes.dart';
 import 'package:weather_app/core/constants/app_strings.dart';
@@ -18,6 +19,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final WeatherController controller = Get.find();
+
+  @override
+  void initState() {
+    super.initState();
+    _initLocaleFormatting();
+  }
+
+  Future<void> _initLocaleFormatting() async {
+    final locale = Get.locale?.toLanguageTag() ?? 'en_US';
+    await initializeDateFormatting(locale, null);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 _searchBar(),
-                _changeThemeButton(),
+                const SizedBox(height: AppSizes.paddingL),
                 Expanded(
                   child: _homeBody(),
                 ),
@@ -56,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
       controller: controller.searchController,
       decoration: InputDecoration(
         prefixIcon: HeroIcon(HeroIcons.magnifyingGlass),
-        hintText: AppStrings.enterCityName,
+        hintText: AppStrings.enterCityName.tr,
         hintStyle: TextStyle(
           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
         ),
@@ -72,38 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
         fontSize: AppSizes.font5XL,
       ),
       onSubmitted: (_) => controller.loadWeatherByCity(),
-    );
-  }
-
-  Widget _changeThemeButton() {
-    final ThemeController themeController = Get.find();
-
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSizes.paddingL),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => themeController.toggle(),
-            child: Container(
-              padding: EdgeInsets.all(AppSizes.paddingXS),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
-                shape: BoxShape.circle,
-              ),
-              child: Obx(() {
-                return HeroIcon(  
-                  themeController.themeMode.value == ThemeMode.dark
-                      ? HeroIcons.moon
-                      : HeroIcons.sun,
-                  color: Theme.of(context).colorScheme.onSurface,
-                  size: AppSizes.iconXL,
-                  style: HeroIconStyle.solid,
-                );
-              }),
-            ),
-          ),
-        ]
-      ),
     );
   }
 
@@ -147,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   size: AppSizes.iconXL,
                 ),
                 label: Text(
-                  AppStrings.tryAgain,
+                  AppStrings.tryAgain.tr,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
                     fontSize: AppSizes.fontL
@@ -172,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: AppSizes.paddingL),
               Text(
-                AppStrings.noDataMsg,
+                AppStrings.noDataMsg.tr,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: AppSizes.fontXL,
@@ -190,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: HeroIconStyle.solid,
                 ),
                 label: Text(
-                  AppStrings.useMyLocMsg,
+                  AppStrings.useMyLoc.tr,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.secondary,
                     fontSize: AppSizes.fontL
@@ -204,25 +184,102 @@ class _HomeScreenState extends State<HomeScreen> {
       }
 
       return RefreshIndicator(
-        onRefresh: () async {},
-        child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              _weatherCard(),
-              const SizedBox(height: AppSizes.paddingL),
-              _weatherDetail(),
-              const SizedBox(height: AppSizes.paddingL),
-              _forecast(),
-            ],
-          ),
+        onRefresh: () async => controller.loadWeatherByCity(),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Column(
+                children: [
+                  _weatherCard(),
+                  const SizedBox(height: AppSizes.paddingL),
+                  _weatherDetail(),
+                  const SizedBox(height: AppSizes.paddingL),
+                  _forecast(),
+                  const SizedBox(height: 80.0),
+                  Text(
+                    AppStrings.appVersion.tr,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: AppSizes.fontL,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Row(
+                children: [
+                  _changeLanguageButton(),
+                  const SizedBox(width: AppSizes.paddingS),
+                  _changeThemeButton(),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     });
   }
+  
+  Widget _changeThemeButton() {
+    final ThemeController themeController = Get.find();
+
+    return GestureDetector(
+      onTap: () => themeController.toggle(),
+      child: Container(
+        padding: EdgeInsets.all(AppSizes.paddingXS),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
+          shape: BoxShape.circle,
+        ),
+        child: Obx(() {
+          return HeroIcon(  
+            themeController.themeMode.value == ThemeMode.dark
+                ? HeroIcons.moon
+                : HeroIcons.sun,
+            color: Theme.of(context).colorScheme.onSurface,
+            size: AppSizes.iconXL,
+            style: HeroIconStyle.solid,
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _changeLanguageButton() {
+    return GestureDetector(
+      onTap: () {
+        final currentLang = Get.locale?.languageCode ?? 'en';
+
+        Get.updateLocale(currentLang == 'id'
+            ? Locale('en', 'US')
+            : Locale('id', 'ID')
+        );
+
+        controller.loadWeatherByCity();
+      },
+      child: Container(
+        padding: EdgeInsets.all(AppSizes.paddingXS),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
+          shape: BoxShape.circle,
+        ),
+        child: HeroIcon(  
+          HeroIcons.language,
+          color: Theme.of(context).colorScheme.onSurface,
+          size: AppSizes.iconXL,
+          style: HeroIconStyle.solid,
+        ),
+      ),
+    );
+  }
 
   Widget _weatherCard() {
     final weather = controller.weather.value!;
+    final locale = Get.locale?.toLanguageTag() ?? 'en_US';
 
     return SizedBox(
       width: AppSizes.screenWidth(context),
@@ -266,10 +323,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${AppStrings.today},',
+                        '${AppStrings.weatherTitle.tr},',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: AppSizes.fontL,
+                          fontSize: AppSizes.fontXL,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: AppSizes.paddingL),
@@ -297,14 +355,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                DateFormat.EEEE().format(weather.dateTime),
+                                DateFormat.EEEE(locale).format(weather.dateTime),
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontSize: AppSizes.fontL,
                                 ),
                               ),
                               Text(
-                                DateFormat('dd MMMM yyyy').format(weather.dateTime),
+                                DateFormat('dd MMMM yyyy', locale).format(weather.dateTime),
                                 style: TextStyle(
                                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontSize: AppSizes.fontL,
@@ -322,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Positioned(
             top: -(AppSizes.paddingM * 2),
-            right: AppSizes.paddingL,
+            right: AppSizes.paddingXL * 2,
             child: Image.asset(
               'assets/icons/${weather.icon}.png',
               width: AppSizes.iconMain * 2,
@@ -345,21 +403,61 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _detailItem(
-            'humi',
-            '${weather.humidity}%',
-            'Kelembaban',
+          SizedBox(
+            width: 100.0,
+            child: Column(
+              children: [
+                _detailItem(
+                  'sunrise',
+                  DateFormat.Hm().format(weather.sunrise),
+                  AppStrings.sunrise.tr.capitalize!,
+                ),
+                const SizedBox(height: AppSizes.paddingL),
+                _detailItem(
+                  'wind',
+                  '${weather.windSpeed} m/s',
+                  AppStrings.windSpeed.tr.capitalize!,
+                ),
+              ],
+            ),
           ),
-          _detailItem(
-            'temp',
-            '${weather.temperature.toStringAsFixed(1)}°C',
-            'Suhu',
+          SizedBox(
+            width: 100.0,
+            child: Column(
+              children: [
+                _detailItem(
+                  'humi',
+                  '${weather.humidity}%',
+                  AppStrings.humidity.tr.capitalize!,
+                ),
+                const SizedBox(height: AppSizes.paddingL),
+                _detailItem(
+                  'temp',
+                  '${weather.temperature.toStringAsFixed(1)}°C',
+                  AppStrings.temperature.tr.capitalize!,
+                ),
+              ],
+            ),
           ),
-          _detailItem(
-            'wind',
-            '${weather.windSpeed} m/s',
-            'Kecepatan Angin',
+          SizedBox(
+            width: 100.0,
+            child: Column(
+              children: [
+                _detailItem(
+                  'sunset',
+                  DateFormat.Hm().format(weather.sunset),
+                  AppStrings.sunset.tr.capitalize!,
+                ),
+                const SizedBox(height: AppSizes.paddingL),
+                _detailItem(
+                  'pressure',
+                  '${weather.pressure} hPa',
+                  AppStrings.pressure.tr.capitalize!,
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -396,9 +494,10 @@ class _HomeScreenState extends State<HomeScreen> {
         Text(
           label,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: AppSizes.fontL
           ),
+          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -409,24 +508,39 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Obx(() {
       return Container(
-        height: 250.0,
+        height: 300.0,
         padding: EdgeInsets.all(AppSizes.paddingL),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(AppSizes.radius2XL),
         ),
-        child: ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemCount: forecastController.forecast.length,
-          itemBuilder: (context, index) {
-            final item = forecastController.forecast[index];
-
-            return _forecastCard(item);
-          }, 
-          separatorBuilder: (_, _) => VerticalDivider(
-            color: Theme.of(context).colorScheme.secondary,
-            thickness: 2,
-          ),
+        child: Column(
+          children: [
+            Text(
+              AppStrings.forecastTitle.tr.capitalize!,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: AppSizes.fontXL,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: AppSizes.paddingL),
+            Expanded(
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: forecastController.forecast.length,
+                itemBuilder: (context, index) {
+                  final item = forecastController.forecast[index];
+              
+                  return _forecastCard(item);
+                }, 
+                separatorBuilder: (_, _) => VerticalDivider(
+                  color: Theme.of(context).colorScheme.secondary,
+                  thickness: 2,
+                ),
+              ),
+            ),
+          ],
         ),
       );
     });
@@ -468,8 +582,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Image.asset(
             'assets/icons/${item.icon}.png',
-            width: AppSizes.icon2XL,
-            height: AppSizes.icon2XL,
+            width: AppSizes.iconL * 2,
+            height: AppSizes.iconL * 2,
           ),
           Text(
             '${item.temperature.toStringAsFixed(0)}°C',
