@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:weather_app/core/local/app_translations.dart';
 import 'package:weather_app/core/routes/app_router.dart';
 import 'package:weather_app/core/theme/app_theme.dart';
 import 'package:weather_app/shared/controllers/theme_controller.dart';
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: controller.themeMode.value,
+      translations: AppTranslations(),
+      locale: Locale('id', 'ID'),
+      fallbackLocale: Locale('en', 'US'),
       initialRoute: Routes.home,
       getPages: AppRouter.pages,
     ));
