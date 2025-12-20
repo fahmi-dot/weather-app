@@ -1,17 +1,23 @@
 class AppStrings {
-  static const String appName = 'MiWeather';
+  static const appName = 'app.name';
+  static const appVersion = 'app.version';
 
-  static const String enterCityName = 'Enter city name';
+  static const forecastTitle = 'forecast.title';
+  static const weatherTitle = 'weather.title';
 
-  static const String temp = 'Temperature';
-  static const String humi = 'Humidity';
-  static const String wind = 'Wind speed';
+  static const humidity = 'weather.humidity';
+  static const pressure = 'weather.pressure';
+  static const sunrise = 'weather.sunrise';
+  static const sunset = 'weather.sunset';
+  static const temperature = 'weather.temperature';
+  static const windSpeed = 'weather.windSpeed';
 
-  static const String today = 'Today'; 
-  static const String tryAgain = 'Try again';
+  static const enterCityName = 'input.enterCity';
 
-  static const String errorMsg = 'Error';
-  static const String noDataMsg = 'No weather data';
-  static const String failedGetLocMsg = 'Failed to get location';
-  static const String useMyLocMsg = 'Use my location';
+  static const tryAgain = 'action.tryAgain';
+  static const useMyLoc = 'action.useMyLoc';
+
+  static const errorMsg = 'error.title';
+  static const noDataMsg = 'error.noData';
+  static const failedGetLocMsg = 'error.failedGetLoc';
 }
