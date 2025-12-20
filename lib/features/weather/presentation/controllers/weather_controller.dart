@@ -5,8 +5,10 @@ import 'package:weather_app/core/utils/permissions.dart';
 import 'package:weather_app/features/weather/domain/entities/weather.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_weather_by_city_usecase.dart';
 import 'package:weather_app/features/weather/domain/usecases/get_weather_usecase.dart';
+import 'package:weather_app/features/weather/presentation/controllers/forecast_controller.dart';
 
 class WeatherController extends GetxController {
+  final ForecastController forecastController = Get.find();
   final TextEditingController searchController = TextEditingController();
   
   final GetWeatherUseCase getWeather;
@@ -54,6 +56,7 @@ class WeatherController extends GetxController {
         },
         (data) {
           weather.value = data;
+          forecastController.loadForecast();
         });
     } catch (e) {
       hasError.value = true;
@@ -88,6 +91,7 @@ class WeatherController extends GetxController {
         }, 
         (data) {
           weather.value = data;
+          forecastController.loadForecastByCity(cityName);
         }
       );
     } catch (e) {
